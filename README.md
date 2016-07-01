@@ -34,6 +34,20 @@ Create a properties file:
 ```bash
 boot properties -f bower.json -d <some path> -c <file contents> 
 ```
+
+Use in a wrapper task:
+
+```clojure
+(boot/deftask bower
+  "boot-clj wrapper for bower"
+  [...]
+  (let [...]
+    (comp
+      (exec/properties :contents bwrjson :directory tmp-path :file "bower.json")
+      (exec/properties :contents bwrrc :directory tmp-path :file ".bowerrc")
+      (exec/exec :process "bower" :arguments ["install" "--allow-root"] :directory tmp-path :local "node_modules/bower/bin"))))
+```
+
 ##Task Options
 
 The `exec` task exposes options for specifying where to look for an executable and where to execute once it is found.
