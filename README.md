@@ -1,10 +1,7 @@
 # boot-exec
+[![Clojars Project](https://img.shields.io/clojars/v/degree9/boot-exec.svg)](https://clojars.org/degree9/boot-exec)
+
 Boot-clj external process execution using Apache Commons Exec
-[](dependency)
-```clojure
-[degree9/boot-exec "0.2.0"] ;; latest release
-```
-[](/dependency)
 
 (Sub)Process Execution for [boot-clj][1].
 
