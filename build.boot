@@ -1,9 +1,9 @@
 (set-env!
- :dependencies  '[[org.clojure/clojure                 "1.7.0"]
+ :dependencies  '[[org.clojure/clojure                 "1.7.0" :scope "provided"]
                   [boot/core                           "2.6.0"]
-                  [adzerk/bootlaces                    "0.1.13"]
-                  [org.clojars.hozumi/clj-commons-exec "1.2.0"]
+                  [adzerk/bootlaces                    "0.1.13" :scope "test"]
                   [cheshire                            "5.5.0"]
+                  [org.clojars.hozumi/clj-commons-exec "1.2.0"]
                   [degree9/boot-semver                 "1.2.0"]]
  :resource-paths   #{"src"})
 
@@ -19,7 +19,7 @@
        :url         "https://github.com/degree9/boot-exec"
        :scm         {:url "https://github.com/degree9/boot-exec"}})
 
-(deftask dev
+(deftask develop
   "Build boot-exec for development."
   []
   (comp
@@ -35,8 +35,7 @@
   "Build boot-exec and deploy to clojars."
   []
   (comp
-   (version :minor 'inc
-            :patch 'zero)
+   (version)
    (target  :dir #{"target"})
    (build-jar)
    (push-release)))
