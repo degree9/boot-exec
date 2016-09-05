@@ -32,11 +32,13 @@
    k cache-key   VAL     kw       "Optional cache key for when exec is used for various filesets."
    d directory   VAL     str      "Optional target directory to execute the process within."
    g global      VAL     str      "Optional global path to search for the executable."
-   l local       VAL     str      "Optional local path to search for the executable."]
+   l local       VAL     str      "Optional local path to search for the executable."
+   x debug               bool     "Optionally display executable arguments in output. (same as with boot -v)"]
   (let [cache-key    (:cache-key *opts*)
         directory    (:directory *opts*)
         proc         (:process *opts*)
         args         (:arguments *opts*)
+        dbug         (:debug *opts*)
         local-path   (:local *opts* "./")
         global-path  (:global *opts* "/usr/local/bin")
         tmp          (cond directory (io/file directory)
@@ -49,6 +51,7 @@
                            :else proc)]
     (boot/with-pre-wrap fileset
         (util/info (clojure.string/join ["Executing Process: " process "\n"]))
+        ((if dbug util/info util/dbug) (clojure.string/join ["Executing Process with arguments: " args "\n"]))
         (let [cmdresult   @(exec/sh (into [process] args) {:dir (.getAbsolutePath tmp)})
               exitcode    (:exit cmdresult)
               errormsg    (:err cmdresult)
