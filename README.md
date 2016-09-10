@@ -1,5 +1,8 @@
 # boot-exec
 [![Clojars Project](https://img.shields.io/clojars/v/degree9/boot-exec.svg)](https://clojars.org/degree9/boot-exec)
+[![Dependencies Status](https://jarkeeper.com/degree9/boot-exec/status.svg)](https://jarkeeper.com/degree9/boot-exec)
+[![Downloads](https://jarkeeper.com/degree9/boot-exec/downloads.svg)](https://jarkeeper.com/degree9/boot-exec)
+<!--- [![CircleCI](https://circleci.com/gh/degree9/boot-exec.svg?style=svg)](https://circleci.com/gh/degree9/boot-exec) --->
 
 Boot-clj external process execution using Apache Commons Exec
 
