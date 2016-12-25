@@ -39,7 +39,7 @@
         global-exec (io/file global-path proc)]
     (cond (.exists local-exec)  (.getAbsolutePath local-exec)
           (.exists global-exec) (.getPath global-exec)
-          :else                 proc)))
+          :else proc)))
 
 (defn exec-impl [fileset *opts*]
   (let [process (get-process *opts*)
