@@ -8,9 +8,9 @@
  :resource-paths   #{"src"})
 
 (require
- '[adzerk.bootlaces :refer :all]
- '[boot-semver.core :refer :all]
- '[degree9.boot-exec :refer :all])
+ '[adzerk.bootlaces    :refer :all]
+ '[degree9.boot-semver :refer :all]
+ '[degree9.boot-exec   :refer :all])
 
 (task-options!
   pom    {:project 'degree9/boot-exec
