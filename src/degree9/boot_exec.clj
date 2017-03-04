@@ -17,19 +17,24 @@
 
 (boot/deftask properties
   "Generate config/property files for exteral dev tools."
-  [c contents  VAL str "Contents of config/property file."
-   d directory VAL str "Directory to output config/property file."
-   f file      VAL str "Config/Property file name."
-   k cache-key VAL kw  "Optional cache key for when property files are used in multiple filesets."]
+  [c contents  VAL str  "Contents of config/property file."
+   d directory VAL str  "Directory to output config/property file."
+   f file      VAL str  "Config/Property file name."
+   k cache-key VAL kw   "Optional cache key for when property files are used in multiple filesets."
+   i include       bool "Include property file in fileset."]
    (let [file      (:file *opts*)
          propstr   (:contents *opts*)
+         include?  (:include *opts*)
          tmp       (get-directory *opts*)
          propf     (io/file tmp file)]
      (boot/with-pre-wrap fileset
        (util/info (str "Writing property file " file "...\n"))
        (doto propf io/make-parents (spit propstr))
-       (util/info (str "Adding property file to fileset...\n"))
-       (-> fileset (boot/add-resource tmp) boot/commit!))))
+       (if include?
+         (let []
+           (util/info (str "Adding property file to fileset...\n"))
+           (-> fileset (boot/add-resource tmp) boot/commit!))
+         fileset))))
 
 (defn get-process [*opts*]
   (let [proc        (:process *opts*)
