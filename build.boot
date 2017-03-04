@@ -4,7 +4,7 @@
                   [adzerk/bootlaces                    "0.1.13" :scope "test"]
                   [cheshire                            "5.7.0"]
                   [org.clojars.hozumi/clj-commons-exec "1.2.0"]
-                  [degree9/boot-semver                 "1.4.1"]]
+                  [degree9/boot-semver                 "1.4.3" :scope "test"]]
  :resource-paths   #{"src"})
 
 (require
