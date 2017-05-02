@@ -4,7 +4,7 @@
             [boot.tmpdir :as tmpd]
             [boot.util :as util]
             [clojure.java.io :as io]
-            [clj-commons-exec :as exec]
+            [clj-commons-exec :as ex]
             [boot.task.built-in :as tasks]
             [cheshire.core :refer :all]))
 
@@ -50,16 +50,19 @@
   (let [process (get-process *opts*)
         args    (:arguments *opts*)
         tmp     (get-directory *opts*)
-        cmd     (exec/sh (into [process] args) {:dir (.getAbsolutePath tmp)})]
+        cmd     (ex/sh (into [process] args) {:dir (.getAbsolutePath tmp)})
+        show?   (:show *opts*)]
     (util/info (clojure.string/join ["Executing Process: " process "\n"]))
     (util/dbug (clojure.string/join ["Executing Process with arguments: " args "\n"]))
     (let [cmdresult   @cmd
           exitcode    (:exit cmdresult)
           errormsg    (:err cmdresult)
           stdout      (:out cmdresult)]
-      (when stdout (util/dbug stdout))
-      (assert (= 0 exitcode) (util/fail (clojure.string/join ["Process failed with...: \n" errormsg "\n"])))
-      (util/info (str "Process completed successfully...\n")))
+      (cond (not= 0 exitcode) (util/fail "Process failed with...: \n %s \n" errormsg)
+            errormsg          (util/info errormsg)
+            show?             (util/info stdout)
+            :else             (util/dbug stdout))
+      (util/info "Process completed successfully...\n"))
     (if (:include *opts*) (-> fileset (boot/add-resource tmp) boot/commit!) fileset)))
 
 (boot/deftask exec
@@ -70,7 +73,8 @@
    d directory   VAL     str      "Optional target directory to execute the process within."
    g global      VAL     str      "Optional global path to search for the executable."
    l local       VAL     str      "Optional local path to search for the executable."
-   i include             bool     "Include files added to the working directory."]
+   i include             bool     "Include files added to the working directory."
+   s show                bool     "Show executable output. By default output only with verbose (boot -vv)."]
   (boot/with-pre-wrap fileset
     (exec-impl fileset *opts*)))
 
@@ -84,3 +88,11 @@
    l local       VAL     str      "Optional local path to search for the executable."]
   (boot/with-post-wrap fileset
     (exec-impl fileset *opts*)))
+
+(boot/deftask boot
+  "Launch boot in boot."
+  [a arguments VAL [str] "Cli arguments to pass to boot."
+   d directory VAl str   "Optional target directory to execute boot within."]
+  (let [args (:arguments *opts*)
+        dir  (:directory *opts*)]
+    (exec :process "boot" :arguments args :directory dir :show true)))
