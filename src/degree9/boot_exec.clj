@@ -43,10 +43,10 @@
   (OS/isFamilyWindows))
 
 (def ^:private executable-extensions
-  (if os-windows?
-    (-> (System/getenv "PATHEXT")
-        (string/split #";"))
-    [""]))
+  (cond-> [""]
+          os-windows?
+          (into (-> (System/getenv "PATHEXT")
+                    (string/split #";")))))
 
 (defn- get-executable
   [path name]
