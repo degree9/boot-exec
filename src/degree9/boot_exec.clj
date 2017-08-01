@@ -4,9 +4,12 @@
             [boot.tmpdir :as tmpd]
             [boot.util :as util]
             [clojure.java.io :as io]
+            [clojure.string :as string]
             [clj-commons-exec :as ex]
             [boot.task.built-in :as tasks]
-            [cheshire.core :refer :all]))
+            [cheshire.core :refer :all])
+  (:import (org.apache.commons.exec OS)
+           (java.io File)))
 
 (defn get-directory [*opts*]
   (let [cache-key (:cache-key *opts*)
@@ -36,24 +39,48 @@
            (-> fileset (boot/add-resource tmp) boot/commit!))
          fileset))))
 
+(def ^:private os-windows?
+  (OS/isFamilyWindows))
+
+(def ^:private executable-extensions
+  (if os-windows?
+    (-> (System/getenv "PATHEXT")
+        (string/split #";"))
+    [""]))
+
+(defn- get-executable
+  [path name]
+  (->> executable-extensions
+       (map #(io/file path (str name %)))
+       (filter #(.canExecute %))
+       first))
+
 (defn get-process [*opts*]
   (let [proc        (:process *opts*)
         local-path  (:local *opts* "./")
         global-path (:global *opts* "/usr/local/bin")
-        local-exec  (io/file local-path proc)
-        global-exec (io/file global-path proc)]
-    (cond (.exists local-exec)  (.getAbsolutePath local-exec)
-          (.exists global-exec) (.getPath global-exec)
+        local-exec  (get-executable local-path proc)
+        global-exec (get-executable global-path proc)]
+    (cond local-exec  (.getAbsolutePath local-exec)
+          global-exec (.getPath global-exec)
           :else proc)))
+
+(defn- sh
+  [process args dir]
+  (ex/sh (into (if-not os-windows?
+                 [process]
+                 ["cmd" "/c" process])
+               args)
+         {:dir dir}))
 
 (defn exec-impl [fileset *opts*]
   (let [process (get-process *opts*)
         args    (:arguments *opts*)
         tmp     (get-directory *opts*)
-        cmd     (ex/sh (into [process] args) {:dir (.getAbsolutePath tmp)})
+        cmd     (sh process args (.getAbsolutePath tmp))
         show?   (:show *opts*)]
-    (util/info (clojure.string/join ["Executing Process: " process "\n"]))
-    (util/dbug (clojure.string/join ["Executing Process with arguments: " args "\n"]))
+    (util/info (string/join ["Executing Process: " process "\n"]))
+    (util/dbug (string/join ["Executing Process with arguments: " args "\n"]))
     (let [cmdresult   @cmd
           exitcode    (:exit cmdresult)
           errormsg    (:err cmdresult)
