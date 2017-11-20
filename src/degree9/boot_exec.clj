@@ -87,8 +87,8 @@
           stdout      (:out cmdresult)]
       (cond (not= 0 exitcode) (util/fail "Process failed with...: \n %s \n" errormsg)
             errormsg          (util/info errormsg)
-            show?             (util/info stdout)
-            :else             (util/dbug stdout))
+            show?             (util/info (str stdout))
+            :else             (util/dbug (str stdout)))
       (util/info "Process completed successfully...\n"))
     (if (:include *opts*) (-> fileset (boot/add-resource tmp) boot/commit!) fileset)))
 
