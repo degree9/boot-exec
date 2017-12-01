@@ -86,7 +86,7 @@
           errormsg    (:err cmdresult)
           stdout      (:out cmdresult)]
       (cond (not= 0 exitcode) (util/fail "Process failed with...: \n %s \n" errormsg)
-            errormsg          (util/fail errormsg)
+            errormsg          (util/fail "%s" errormsg)
             show?             (util/info "%s" stdout)
             :else             (util/dbug "%s" stdout))
       (util/info "Process completed successfully...\n"))
