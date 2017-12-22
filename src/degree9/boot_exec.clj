@@ -8,8 +8,8 @@
             [clj-commons-exec :as ex]
             [boot.task.built-in :as tasks]
             [cheshire.core :refer :all])
-  (:import (org.apache.commons.exec OS)
-           (java.io File)))
+  (:import [org.apache.commons.exec CommandLine OS]
+           [java.io File]))
 
 (defn get-directory [*opts*]
   (let [cache-key (:cache-key *opts*)
@@ -25,32 +25,34 @@
    f file      VAL str  "Config/Property file name."
    k cache-key VAL kw   "Optional cache key for when property files are used in multiple filesets."
    i include       bool "Include property file in fileset."]
-   (let [file      (:file *opts*)
-         propstr   (:contents *opts*)
-         include?  (:include *opts*)
-         tmp       (get-directory *opts*)
-         propf     (io/file tmp file)]
-     (boot/with-pre-wrap fileset
-       (util/info (str "Writing property file " file "...\n"))
-       (doto propf io/make-parents (spit propstr))
-       (if include?
-         (let []
-           (util/info (str "Adding property file to fileset...\n"))
-           (-> fileset (boot/add-resource tmp) boot/commit!))
-         fileset))))
+  (let [file      (:file *opts*)
+        propstr   (:contents *opts*)
+        include?  (:include *opts*)
+        tmp       (get-directory *opts*)
+        propf     (io/file tmp file)]
+    (boot/with-pre-wrap fileset
+      (util/info (str "Writing property file " file "...\n"))
+      (doto propf io/make-parents (spit propstr))
+      (if include?
+        (let []
+          (util/info (str "Adding property file to fileset...\n"))
+          (-> fileset (boot/add-resource tmp) boot/commit!))
+        fileset))))
 
-(def ^:private os-windows?
-  (OS/isFamilyWindows))
+(defn family? [family]
+  (case family
+    :windows (OS/isFamilyWindows)
+    :mac     (OS/isFamilyMac)))
 
-(def ^:private executable-extensions
+(defn- executable-extensions []
   (cond-> [""]
-          os-windows?
-          (into (-> (System/getenv "PATHEXT")
-                    (string/split #";")))))
+    (family? :windows)
+    (into (-> (System/getenv "PATHEXT")
+              (string/split #";")))))
 
 (defn- get-executable
   [path name]
-  (->> executable-extensions
+  (->> (executable-extensions)
        (map #(io/file path (str name %)))
        (filter #(.canExecute %))
        first))
@@ -67,30 +69,35 @@
 
 (defn- sh
   [process args dir]
-  (ex/sh (into (if-not os-windows?
-                 [process]
-                 ["cmd" "/c" process])
-               args)
-         {:dir dir}))
+  (ex/sh
+    (into
+      (if-not (family? :windows)
+        [process]
+        ["cmd" "/c" process])
+      args)
+    {:dir dir}))
 
 (defn exec-impl [fileset *opts*]
   (let [process (get-process *opts*)
         args    (:arguments *opts*)
         tmp     (get-directory *opts*)
         cmd     (sh process args (.getAbsolutePath tmp))
-        show?   (:show *opts*)]
+        output  (:output *opts*)
+        exclude (:exclude *opts*)
+        fail    (:fail *opts*)]
     (util/info (string/join ["Executing Process: " process "\n"]))
     (util/dbug (string/join ["Executing Process with arguments: " args "\n"]))
-    (let [cmdresult   @cmd
-          exitcode    (:exit cmdresult)
-          errormsg    (:err cmdresult)
-          stdout      (:out cmdresult)]
-      (cond (not= 0 exitcode) (util/fail "Process failed with...: \n %s \n" errormsg)
-            errormsg          (util/fail errormsg)
-            show?             (util/info "%s" stdout)
-            :else             (util/dbug "%s" stdout))
-      (util/info "Process completed successfully...\n"))
-    (if (:include *opts*) (-> fileset (boot/add-resource tmp) boot/commit!) fileset)))
+    (let [cmdresult @cmd
+          exitcode  (:exit cmdresult)
+          errormsg  (:err cmdresult)
+          stdout    (:out cmdresult)]
+      (if (and (not (zero? exitcode)) fail)
+        (util/exit-error (util/fail "Process failed with: \n %s \n" errormsg))
+        (cond errormsg (util/warn "%s" errormsg)
+              output   (util/info "%s" stdout)
+              :else    (util/dbug "%s" stdout)))
+      (util/info "Process completed successfully.\n"))
+    (if (:include *opts*) (-> fileset (boot/add-resource tmp :exclude exclude) boot/commit!) fileset)))
 
 (boot/deftask exec
   "Process execution via Apache Commons Exec"
@@ -101,7 +108,9 @@
    g global      VAL     str      "Optional global path to search for the executable."
    l local       VAL     str      "Optional local path to search for the executable."
    i include             bool     "Include files added to the working directory."
-   s show                bool     "Show executable output. By default output only with verbose (boot -vv)."]
+   e exclude     VAL     #{regex} "Filter included files from the working directory."
+   o output              bool     "Show executable output. By default output only with verbose (boot -vv)."
+   f fail                bool     "Task failure when process returns non-zero error code."]
   (boot/with-pre-wrap fileset
     (exec-impl fileset *opts*)))
 
@@ -122,4 +131,4 @@
    d directory VAl str   "Optional target directory to execute boot within."]
   (let [args (:arguments *opts*)
         dir  (:directory *opts*)]
-    (exec :process "boot" :arguments args :directory dir :show true)))
+    (exec :process "boot" :arguments args :directory dir :output true)))

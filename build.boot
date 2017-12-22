@@ -1,14 +1,12 @@
 (set-env!
  :dependencies  '[[org.clojure/clojure                 "1.8.0" :scope "provided"]
                   [boot/core                           "2.7.1"]
-                  [adzerk/bootlaces                    "0.1.13" :scope "test"]
                   [cheshire                            "5.7.1"]
                   [org.clojars.hozumi/clj-commons-exec "1.2.0"]
-                  [degree9/boot-semver                 "1.4.4" :scope "test"]]
+                  [degree9/boot-semver                 "1.6.0" :scope "test"]]
  :resource-paths   #{"src"})
 
 (require
- '[adzerk.bootlaces    :refer :all]
  '[degree9.boot-semver :refer :all]
  '[degree9.boot-exec   :as ex])
 
@@ -23,11 +21,11 @@
   "Build boot-exec for development."
   []
   (comp
-   (watch)
    (version :develop true
             :minor 'inc
             :patch 'zero
             :pre-release 'snapshot)
+   (watch)
    (target)
    (build-jar)))
 
