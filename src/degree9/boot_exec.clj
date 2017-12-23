@@ -83,7 +83,7 @@
         tmp     (get-directory *opts*)
         cmd     (sh process args (.getAbsolutePath tmp))
         output  (:output *opts*)
-        include (:include *opts* #{#".*"})
+        include (:include *opts*)
         exclude (:exclude *opts*)
         fail    (:fail *opts*)]
     (util/info (string/join ["Executing Process: " process "\n"]))
@@ -98,7 +98,7 @@
               output   (util/info "%s" stdout)
               :else    (util/dbug "%s" stdout)))
       (util/info "Process completed successfully.\n"))
-    (-> fileset (boot/add-resource tmp :include include :exclude exclude) boot/commit!)))
+    (if include (-> fileset (boot/add-resource tmp :exclude exclude) boot/commit!) fileset)))
 
 (boot/deftask exec
   "Process execution via Apache Commons Exec"
@@ -108,7 +108,7 @@
    d directory   VAL     str      "Optional target directory to execute the process within."
    g global      VAL     str      "Optional global path to search for the executable."
    l local       VAL     str      "Optional local path to search for the executable."
-   i include     VAL     #{regex} "Include files added to the working directory."
+   i include             bool     "Include files added to the working directory."
    e exclude     VAL     #{regex} "Filter included files from the working directory."
    o output              bool     "Show executable output. By default output only with verbose (boot -vv)."
    f fail                bool     "Task failure when process returns non-zero error code."]
