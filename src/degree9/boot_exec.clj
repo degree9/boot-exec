@@ -68,20 +68,21 @@
           :else proc)))
 
 (defn- sh
-  [process args dir]
+  [process args opts]
   (ex/sh
     (into
       (if-not (family? :windows)
         [process]
         ["cmd" "/c" process])
       args)
-    {:dir dir}))
+    opts))
 
 (defn exec-impl [fileset *opts*]
   (let [process (get-process *opts*)
         args    (:arguments *opts*)
+        env     (:env-map *opts*)
         tmp     (get-directory *opts*)
-        cmd     (sh process args (.getAbsolutePath tmp))
+        cmd     (sh process args {:dir (.getAbsolutePath tmp) :add-env env})
         output  (:output *opts*)
         include (:include *opts*)
         exclude (:exclude *opts*)
@@ -108,6 +109,7 @@
    d directory   VAL     str      "Optional target directory to execute the process within."
    g global      VAL     str      "Optional global path to search for the executable."
    l local       VAL     str      "Optional local path to search for the executable."
+   m env-map     VAL     {kw str} "A map to be added to the proess environment."
    i include             bool     "Include files added to the working directory."
    e exclude     VAL     #{regex} "Filter included files from the working directory."
    o output              bool     "Show executable output. By default output only with verbose (boot -vv)."
