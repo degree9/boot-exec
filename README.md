@@ -8,6 +8,18 @@
 
 Boot-clj external process execution using Apache Commons Exec
 
+---
+
+<p align="center">
+  <a href="https://degree9.io" align="center">
+    <img width="135" src="http://degree9.io/images/degree9.png">
+  </a>
+  <br>
+  <b>boot-exec is developed and maintained by Degree9</b>
+</p>
+
+---
+
 (Sub)Process Execution for [boot-clj][1].
 
 * Provides `exec` task for process execution
