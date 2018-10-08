@@ -1,7 +1,8 @@
-# boot-exec #
+# boot-exec
+
 [![Clojars Project](https://img.shields.io/clojars/v/degree9/boot-exec.svg)](https://clojars.org/degree9/boot-exec)
-[![Dependencies Status](https://jarkeeper.com/degree9/boot-exec/status.svg)](https://jarkeeper.com/degree9/boot-exec)
-[![Downloads](https://jarkeeper.com/degree9/boot-exec/downloads.svg)](https://jarkeeper.com/degree9/boot-exec)
+[![Dependencies Status](https://versions.deps.co/degree9/boot-exec/status.svg)](https://versions.deps.co/degree9/boot-exec)
+[![Downloads](https://versions.deps.co/degree9/boot-exec/downloads.svg)](https://versions.deps.co/degree9/boot-exec)
 [![Medium](https://img.shields.io/badge/medium-read-blue.svg)](https://medium.com/degree9/boot-boot-exec-e1453826b732)
 <!--- [![CircleCI](https://circleci.com/gh/degree9/boot-exec.svg?style=svg)](https://circleci.com/gh/degree9/boot-exec)
 [![gitcheese.com](https://api.gitcheese.com/v1/projects/95880215-d9f4-4604-9e9e-565efdbef0f4/badges?type=1&size=xs)](https://www.gitcheese.com/app/#/projects/95880215-d9f4-4604-9e9e-565efdbef0f4/pledges/create) --->
