@@ -1,14 +1,26 @@
 <p align="center"><img src="/.github/d9boot-exec.png" width="445px"></p>
 
 [![Clojars Project](https://img.shields.io/clojars/v/degree9/boot-exec.svg)](https://clojars.org/degree9/boot-exec)
-[![Dependencies Status](https://jarkeeper.com/degree9/boot-exec/status.svg)](https://jarkeeper.com/degree9/boot-exec)
-[![Downloads](https://jarkeeper.com/degree9/boot-exec/downloads.svg)](https://jarkeeper.com/degree9/boot-exec)
+[![Dependencies Status](https://versions.deps.co/degree9/boot-exec/status.svg)](https://versions.deps.co/degree9/boot-exec)
+[![Downloads](https://versions.deps.co/degree9/boot-exec/downloads.svg)](https://versions.deps.co/degree9/boot-exec)
 [![Medium](https://img.shields.io/badge/medium-read-blue.svg)](https://medium.com/degree9/boot-boot-exec-e1453826b732)
 [![Slack][slack]][d9-slack]
 <!--- [![CircleCI](https://circleci.com/gh/degree9/boot-exec.svg?style=svg)](https://circleci.com/gh/degree9/boot-exec)
 [![gitcheese.com](https://api.gitcheese.com/v1/projects/95880215-d9f4-4604-9e9e-565efdbef0f4/badges?type=1&size=xs)](https://www.gitcheese.com/app/#/projects/95880215-d9f4-4604-9e9e-565efdbef0f4/pledges/create) --->
 
 Boot-clj external process execution using Apache Commons Exec
+
+---
+
+<p align="center">
+  <a href="https://degree9.io" align="center">
+    <img width="135" src="http://degree9.io/images/degree9.png">
+  </a>
+  <br>
+  <b>boot-exec is developed and maintained by Degree9</b>
+</p>
+
+---
 
 (Sub)Process Execution for [boot-clj][1].
 
@@ -66,6 +78,18 @@ l local       VAL     str      "Optional local path to search for the executable
 ```
 
 The `:cache-key` and `directory` options are mutually exclusive, the task first checks for a cache-key if found this is the location where the process will execute. If a directory is provided instead the directory location will be used for execution. If neither are provided the task will generate and use a temporary directory.
+
+---
+
+<p align="center">
+  <a href="https://www.patreon.com/degree9" align="center">
+    <img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160" alt="Patreon">
+  </a>
+  <br>
+  <b>Support this and other open-source projects on Patreon!</b>
+</p>
+
+---
 
 [1]: https://github.com/boot-clj/boot
 [2]: https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm
