@@ -1,9 +1,9 @@
 (set-env!
- :dependencies  '[[org.clojure/clojure                 "1.8.0" :scope "provided"]
-                  [boot/core                           "2.7.1"]
-                  [cheshire                            "5.7.1"]
+ :dependencies  '[[org.clojure/clojure                 "1.10.0"]
+                  [boot/core                           "2.8.2"]
+                  [cheshire                            "5.8.1"]
                   [org.clojars.hozumi/clj-commons-exec "1.2.0"]
-                  [degree9/boot-semver                 "1.6.0" :scope "test"]]
+                  [degree9/boot-semver                 "1.8.0" :scope "test"]]
  :resource-paths   #{"src"})
 
 (require
